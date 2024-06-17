@@ -28,18 +28,22 @@ const updateUI = (data) => {
 
     console.log(data);
 
+
     // destructure properties
     const { cityInfo, weatherInfo } = data;
+
+    const temperature = cityInfo.TimeZone.Code == 'EDT' ? weatherInfo.Temperature.Imperial.Value : weatherInfo.Temperature.Metric.Value;
+
 
 
     // update the html with the city and weather info
     details.innerHTML =
         ` <h4 class="my-3">${cityInfo.EnglishName}</h4>
-         <div class="my-3">${weatherInfo.WeatherText}</div>
+          <div class="my-3">${weatherInfo.WeatherText}</div>
 
           <div class="display-4 my-4">
-            <span class>${weatherInfo.Temperature.Metric.Value}</span>
-            <span class>&deg;c</span>
+            <span class>${temperature}</span>
+            <span class>&deg;${cityInfo.TimeZone.Code == 'EDT' ? 'f' : 'c'}</span>
            </div>
         `;
 
@@ -63,9 +67,22 @@ form.addEventListener('submit', e => {
     const city = form.city.value.trim();
     form.reset();
 
+    // store city locally
+    localStorage.setItem('city', city);
+
+
     updateCity(city)
         .then(data => updateUI(data))
         .catch(err => console.log('rejected,', err));
 
 });
+
+
+// check if the city is stored locally
+
+if (localStorage.getItem('city')) {
+    updateCity(localStorage.getItem('city'))
+        .then(data => updateUI(data))
+        .catch(err => console.log('rejected,', err));
+}
 

@@ -1,4 +1,4 @@
-const apiKey = "Your API Key";
+const apiKey = "";
 
 // get city information
 const getCity = async (city) => {
