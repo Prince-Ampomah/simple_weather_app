@@ -3,6 +3,8 @@ const details = document.querySelector('.details');
 const card = document.querySelector('.card');
 const time = document.querySelector('img.time');
 const icon = document.querySelector('.icon img');
+const forecast = new Forecast();
+
 
 
 const updateTimeAndIcon = (weatherInfo) => {
@@ -15,25 +17,12 @@ const updateTimeAndIcon = (weatherInfo) => {
 }
 
 
-const updateCity = async (city) => {
-
-    const cityInfo = await getCity(city);
-    const weatherInfo = await getWeather(cityInfo.Key);
-
-    return { cityInfo, weatherInfo };
-};
-
 const updateUI = (data) => {
-
-
-    console.log(data);
-
 
     // destructure properties
     const { cityInfo, weatherInfo } = data;
 
     const temperature = cityInfo.TimeZone.Code == 'EDT' ? weatherInfo.Temperature.Imperial.Value : weatherInfo.Temperature.Metric.Value;
-
 
 
     // update the html with the city and weather info
@@ -67,13 +56,13 @@ form.addEventListener('submit', e => {
     const city = form.city.value.trim();
     form.reset();
 
-    // store city locally
-    localStorage.setItem('city', city);
 
-
-    updateCity(city)
+    forecast.updateCity(city)
         .then(data => updateUI(data))
         .catch(err => console.log('rejected,', err));
+
+    // store city locally
+    localStorage.setItem('city', city);
 
 });
 
@@ -81,7 +70,7 @@ form.addEventListener('submit', e => {
 // check if the city is stored locally
 
 if (localStorage.getItem('city')) {
-    updateCity(localStorage.getItem('city'))
+    forecast.updateCity(localStorage.getItem('city'))
         .then(data => updateUI(data))
         .catch(err => console.log('rejected,', err));
 }

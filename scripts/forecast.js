@@ -1,35 +1,44 @@
-const apiKey = "";
+class Forecast {
+    constructor() {
+        this.apiKey = "YAO1CaOhGZB3yd7qyvPXkHsFMeImwlBr";
+        this.cityURI = "http://dataservice.accuweather.com/locations/v1/cities/search";
+        this.weatherURI = "http://dataservice.accuweather.com/currentconditions/v1/";
+    };
 
-// get city information
-const getCity = async (city) => {
-    // base url
-    const base = "http://dataservice.accuweather.com/locations/v1/cities/search";
+    async updateCity(city) {
 
-    // query parameters
-    const query = `?apikey=${apiKey}&q=${city}`;
+        const cityInfo = await this.getCity(city);
+        const weatherInfo = await this.getWeather(cityInfo.Key);
 
-    // fetch data from the api
-    const response = await fetch(base + query);
+        return { cityInfo, weatherInfo };
+    };
 
-    const data = await response.json();
+    async getCity(city) {
 
-    // return the first element of the array which is the closest to the city name
-    return data[0];
-};
+        // query parameters
+        const query = `?apikey=${this.apiKey}&q=${city}`;
 
-// get weather information
-const getWeather = async (locationKey) => {
-    //330119
+        // fetch data from the api
+        const response = await fetch(this.cityURI + query);
 
-    // base url
-    const base = "http://dataservice.accuweather.com/currentconditions/v1/";
-    const query = `${locationKey}?apikey=${apiKey}`;
+        const data = await response.json();
 
-    // fetch data from the api
-    const response = await fetch(base + query);
+        // return the first element of the array which is the closest to the city name
+        return data[0];
+    }
 
-    const data = await response.json();
+    async getWeather(locationKey) {
 
-    return data[0];
-};
+        const query = `${locationKey}?apikey=${this.apiKey}`;
+
+        // fetch data from the api
+        const response = await fetch(this.weatherURI + query);
+
+        const data = await response.json();
+
+        return data[0];
+    }
+}
+
+
 
